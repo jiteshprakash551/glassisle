@@ -92,10 +92,16 @@ class GlassIsleListener : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) { main.post { handle(sbn) } }
     override fun onNotificationRemoved(sbn: StatusBarNotification) { main.post { IslandHub.remove("n:" + sbn.key) } }
 
+    /** Debug-build-only breadcrumbs: reasons only, never notification content. */
+    private fun dbg(m: String) {
+        if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) android.util.Log.i("GI", m)
+    }
+
     private fun handle(sbn: StatusBarNotification) {
         val prefs = Prefs(this)
         if (!prefs.enabled) return
         val pkg = sbn.packageName
+        dbg("posted")
         if (!AppFilter.allow(pkg, prefs.blocked, packageName)) return
         val n = sbn.notification ?: return
         if (n.flags and Notification.FLAG_GROUP_SUMMARY != 0) return
@@ -115,7 +121,7 @@ class GlassIsleListener : NotificationListenerService() {
         if (!prefs.featureOn(kind)) return
         try {
             val r = Ranking()
-            if (currentRanking.getRanking(sbn.key, r) && r.importance <= android.app.NotificationManager.IMPORTANCE_LOW
+            if (currentRanking.getRanking(sbn.key, r) && r.importance <= android.app.NotificationManager.IMPORTANCE_MIN
                 && kind == Kind.NOTIFICATION) return
         } catch (_: Throwable) {}
         val title = (ex.getCharSequence(Notification.EXTRA_TITLE) ?: "").toString()
@@ -134,10 +140,10 @@ class GlassIsleListener : NotificationListenerService() {
         val now = IslandHub.now()
         if (kind == Kind.NOTIFICATION) {
             val pmgr = getSystemService(PowerManager::class.java)
-            if (!pmgr.isInteractive) return
+            if (!pmgr.isInteractive) { dbg("skip: screen off"); return }
             // Lock-screen privacy: never draw message text over the lock screen.
-            if (getSystemService(android.app.KeyguardManager::class.java).isKeyguardLocked) return
-            if (IslandHub.foregroundPkg == pkg) return // you're already looking at that app
+            if (getSystemService(android.app.KeyguardManager::class.java).isKeyguardLocked) { dbg("skip: keyguard"); return }
+            if (IslandHub.foregroundPkg == pkg) { dbg("skip: foreground app"); return } // you're already looking at that app
             IslandHub.post(Item("n:" + sbn.key, kind, title.ifEmpty { appName }, text, pkg, now,
                 now + prefs.peekSec * 1000L + 500L, null, payload), peek = true)
         } else {

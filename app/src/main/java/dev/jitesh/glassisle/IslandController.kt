@@ -180,7 +180,8 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
         return if (c != null) maxOf(dp(2), c.centerY() - hh / 2) else dp(prefs.yDp)
     }
 
-    private fun xFor(width: Int): Int {
+    private fun xFor(width: Int, pill: Boolean = true): Int {
+        if (!pill) return 0 // peek / expanded cards are centered on the screen
         val sw = screenW()
         val c = if (prefs.autoAlign) cutout() else null
         val base = if (c != null) c.centerX() - sw / 2 else when (prefs.position) {
@@ -269,7 +270,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
         styleBg(newMode)
         val toR = if (newMode == Mode.PILL) hh / 2f else minOf(dpf(30f), hh / 2f)
         val toTop = pillTop(pillH())
-        val toX = xFor(w)
+        val toX = xFor(w, newMode == Mode.PILL)
         if (!attached) {
             lp = baseParams()
             lp.width = widthFor(Mode.PILL); lp.height = pillH(); lp.x = xFor(lp.width); lp.y = toTop
