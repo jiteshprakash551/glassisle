@@ -150,7 +150,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
     }
 
     fun destroy() {
-        prefs.sp.unregisterSharedPreferenceChangeListener(prefListener)
+        prefs.sp.unregisterOnSharedPreferenceChangeListener(prefListener)
         h.removeCallbacksAndMessages(null)
         anim?.cancel()
         if (attached) try { wm.removeView(card) } catch (_: Throwable) {}
