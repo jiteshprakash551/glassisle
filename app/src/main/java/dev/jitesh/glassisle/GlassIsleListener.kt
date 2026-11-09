@@ -104,7 +104,7 @@ class GlassIsleListener : NotificationListenerService() {
         val pkg = sbn.packageName
         dbg("posted")
         IslandHub.debug = applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0
-        if (!AppFilter.allow(pkg, prefs.blocked, packageName)) return
+        if (!AppFilter.allow(pkg, prefs.blocked, if (IslandHub.debugAllowOwn) "" else packageName)) return
         val n = sbn.notification ?: return
         if (n.flags and Notification.FLAG_GROUP_SUMMARY != 0) return
         val ex = n.extras ?: return

@@ -1,6 +1,7 @@
 package dev.jitesh.glassisle
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -48,6 +49,23 @@ class DebugActivity : Activity() {
                 })
                 s.isActive = true
                 session = s
+            }
+            "notif" -> {
+                IslandHub.debugAllowOwn = true
+                val nm = getSystemService(android.app.NotificationManager::class.java)
+                nm.createNotificationChannel(android.app.NotificationChannel("gi_test", "GlassIsle test", android.app.NotificationManager.IMPORTANCE_HIGH))
+                val mute = android.app.PendingIntent.getBroadcast(this, 1, Intent(this, DebugReceiver::class.java).setAction("mute"), android.app.PendingIntent.FLAG_IMMUTABLE)
+                val rpi = android.app.PendingIntent.getBroadcast(this, 2, Intent(this, DebugReceiver::class.java).setAction("reply"), android.app.PendingIntent.FLAG_MUTABLE)
+                val ic = android.graphics.drawable.Icon.createWithResource(this, android.R.drawable.ic_menu_send)
+                val ri = android.app.RemoteInput.Builder("reply").setLabel("Reply").build()
+                val txt = "Hey, are you free tonight? Let's grab dinner at 8."
+                val n = android.app.Notification.Builder(this, "gi_test").setSmallIcon(android.R.drawable.ic_dialog_email)
+                    .setContentTitle("Alex").setContentText(txt)
+                    .setStyle(android.app.Notification.BigTextStyle().bigText(txt))
+                    .setCategory(android.app.Notification.CATEGORY_MESSAGE)
+                    .addAction(android.app.Notification.Action.Builder(ic, "Mute", mute).build())
+                    .addAction(android.app.Notification.Action.Builder(ic, "Reply", rpi).addRemoteInput(ri).build()).build()
+                nm.notify(7, n)
             }
             "timer" -> IslandHub.startTimer(90_000)
         }

@@ -14,6 +14,8 @@ object IslandHub {
     var foregroundPkg: String? = null
 
     var debug = false
+    /** Set only by the debug-build test hook so CI can exercise the real listener path with its own notification. */
+    var debugAllowOwn = false
     /** Debug-build breadcrumbs only (reasons and kinds, never notification content). */
     fun log(m: String) { if (debug) android.util.Log.i("GI", m) }
 
