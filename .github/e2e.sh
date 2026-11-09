@@ -20,6 +20,7 @@ adb shell am start -n $APP/.DebugActivity --es mode notif
 sleep 2; shot 02_notification_peek
 W=$(adb shell wm size | grep -oE '[0-9]+x[0-9]+' | tail -1 | cut -dx -f1)
 adb shell dumpsys notification --noredact | grep -B2 -A12 "Alex" | head -40 > $OUT/notif_dump.txt
+adb shell dumpsys notification --noredact > $OUT/notif_full.txt
 adb shell input tap 540 110; sleep 2; shot 03_notification_expanded
 adb shell input swipe $((W/2)) 400 $((W/2)) 40 120; sleep 1.5; shot 04_after_swipe_dismiss
 adb shell am start -n $APP/.DebugActivity --es mode media; sleep 3; shot 05_music_peek_or_pill
