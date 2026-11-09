@@ -7,6 +7,8 @@ import android.content.Intent
 
 class DebugReceiver : BroadcastReceiver() {
     override fun onReceive(c: Context, i: Intent) {
+        if (i.action == "post") { DebugActivity.postNotif(c); return }
+        if (i.action == "post") { DebugActivity.postNotif(c); return }
         val r = RemoteInput.getResultsFromIntent(i)?.getCharSequence("reply")
         android.util.Log.i("GI_TEST", "notification action=" + i.action + " reply=" + r)
     }

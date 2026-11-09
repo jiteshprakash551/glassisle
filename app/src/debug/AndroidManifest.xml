@@ -5,6 +5,6 @@
         <!-- DEBUG BUILDS ONLY: test hooks used by the CI emulator smoke test. Not in release. -->
         <activity android:name=".DebugActivity" android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <receiver android:name=".DebugReceiver" android:exported="false" />
+        <receiver android:name=".DebugReceiver" android:exported="true" />
     </application>
 </manifest>

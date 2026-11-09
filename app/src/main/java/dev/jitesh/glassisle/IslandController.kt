@@ -324,7 +324,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
             bg.colors = intArrayOf(Color.BLACK, Color.BLACK)
             bg.setStroke(dp(1), 0x1FFFFFFF)
         } else {
-            val a = if (Build.VERSION.SDK_INT >= 31) 0xEE else 0xF6
+            val a = if (Build.VERSION.SDK_INT >= 31) 0xFA else 0xFC
             bg.orientation = GradientDrawable.Orientation.TOP_BOTTOM
             bg.colors = intArrayOf((a shl 24) or 0x2A2A30, (a shl 24) or 0x0E0E12)
             bg.setStroke(dp(1), 0x33FFFFFF)
