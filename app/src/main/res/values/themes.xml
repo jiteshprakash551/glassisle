@@ -1,0 +1,9 @@
+<resources>
+    <color name="ic_bg">#0B0B0F</color>
+    <style name="Theme.GlassIsle" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#0B0B0F</item>
+        <item name="android:statusBarColor">#0B0B0F</item>
+        <item name="android:navigationBarColor">#0B0B0F</item>
+        <item name="android:colorAccent">#0A84FF</item>
+    </style>
+</resources>

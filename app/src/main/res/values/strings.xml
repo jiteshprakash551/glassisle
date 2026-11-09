@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GlassIsle</string>
+    <string name="a11y_desc">GlassIsle draws the island overlay around your camera cutout. It does not read screen content and the app has no internet access.</string>
+</resources>
