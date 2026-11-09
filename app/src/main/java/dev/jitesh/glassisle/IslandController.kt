@@ -428,7 +428,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
             val b = Bundle(); b.putCharSequence(ri.resultKey, text)
             RemoteInput.addResultsToIntent(arrayOf(ri), intent, b)
             a.pi?.send(ctx, 0, intent)
-        } catch (_: Throwable) {}
+        } catch (e: Throwable) { IslandHub.log("reply send failed " + e.javaClass.simpleName) }
         replying = false; setFocusable(false); collapse()
     }
 
@@ -544,8 +544,17 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
             setPadding(dp(16), dp(10), dp(16), dp(10))
             background = roundedBg(if (primary) prefs.accentColor() else 0x2EFFFFFF, dpf(20f))
             isClickable = true
-            setOnClickListener { bumpExpand(); onClick() }
+            setOnClickListener { IslandHub.log("click " + label); bumpExpand(); onClick() }
+            trackPos(label)
         }
+
+    /** Debug breadcrumb: where a control is on screen, so the emulator test can tap it for real. */
+    private fun View.trackPos(label: String) {
+        addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ ->
+            val l = IntArray(2); v.getLocationOnScreen(l)
+            IslandHub.log("btn " + label + " " + (l[0] + v.width / 2) + " " + (l[1] + v.height / 2))
+        }
+    }
 
     private fun buildExpanded(item: Item): View {
         val col = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(18), dp(16), dp(18), dp(16)) }
@@ -641,7 +650,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
         for (a in np.actions) {
             if (a.remote != null || a.title.isEmpty()) continue
             row.addView(View(ctx), LinearLayout.LayoutParams(dp(8), 1))
-            row.addView(pillButton(a.title, false) { try { a.pi?.send() } catch (_: Throwable) {}; collapse() }); n++
+            row.addView(pillButton(a.title, false) { try { a.pi?.send() } catch (e: Throwable) { IslandHub.log("action send failed " + e.javaClass.simpleName) }; collapse() }); n++
         }
         if (replyAct != null) {
             row.addView(View(ctx), LinearLayout.LayoutParams(dp(8), 1))
@@ -660,7 +669,8 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
         }
         box.addView(et, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
         box.addView(GlyphButton(ctx, Glyph.SEND, Color.BLACK, prefs.accentColor()).apply {
-            setOnClickListener { val t = et.text.toString().trim(); if (t.isNotEmpty()) sendReply(a, t) }
+            setOnClickListener { IslandHub.log("click send"); val t = et.text.toString().trim(); if (t.isNotEmpty()) sendReply(a, t) }
+            trackPos("send")
         }, LinearLayout.LayoutParams(dp(40), dp(40)).apply { marginStart = dp(8) })
         col.addView(box)
         col.measure(View.MeasureSpec.makeMeasureSpec(lp.width, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
