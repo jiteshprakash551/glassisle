@@ -1,0 +1,38 @@
+name: release-smoke
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/release-smoke.sh', '.github/workflows/release-smoke.yml']
+permissions:
+  actions: read
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: apks
+          run-id: 42590720566
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dl
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash .github/release-smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-smoke
+          path: smoke-out/**
