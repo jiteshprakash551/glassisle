@@ -34,3 +34,8 @@ jobs:
           path: |
             app/build/outputs/apk/**/*.apk
             app/build/reports/tests/**
+            app/build/reports/lint-results-debug.*
+      - name: apksigner verify
+        run: |
+          AS=$(ls $ANDROID_HOME/build-tools/*/apksigner | tail -1)
+          for f in app/build/outputs/apk/release/app-release.apk; do $AS verify --verbose --print-certs $f; done

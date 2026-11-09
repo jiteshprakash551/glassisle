@@ -108,6 +108,8 @@ class GlassIsleAccessibility : AccessibilityService() {
         try { unregisterReceiver(receiver) } catch (_: Throwable) {}
         if (IslandHub.sink === controller) IslandHub.sink = null
         controller?.destroy()
+        IslandHub.stack.prune(Long.MAX_VALUE)
+        for (k in listOf("demo","charging","ringer","bt","battery_low","timer:builtin","timer:done")) IslandHub.stack.remove(k)
         controller = null
         super.onDestroy()
     }
