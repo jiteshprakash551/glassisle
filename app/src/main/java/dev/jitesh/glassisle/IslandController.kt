@@ -95,6 +95,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
         IslandHub.log("onPost kind=${item.kind} peek=$peek mode=$mode")
         if (!prefs.enabled) return
         val now = IslandHub.now()
+        if (locked()) { IslandHub.log("locked: island stays hidden"); if (mode != Mode.HIDDEN) hide(); return }
         if (mode == Mode.EXPANDED && shownId == item.id) { rerender(item, Mode.EXPANDED); return }
         val top = IslandHub.stack.top(now)
         if (peek && mode != Mode.EXPANDED && !landscapeHidden() && (top == null || top.id == item.id)) {
@@ -114,13 +115,16 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
 
     fun refreshNow() = refresh()
 
+    private fun locked(): Boolean =
+        try { ctx.getSystemService(android.app.KeyguardManager::class.java).isKeyguardLocked } catch (_: Throwable) { false }
+
     private fun landscapeHidden() =
         prefs.hideLandscape && ctx.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     private fun refresh() {
         if (mode == Mode.EXPANDED) return
         val now = IslandHub.now()
-        if (!prefs.enabled || landscapeHidden()) { hide(); return }
+        if (!prefs.enabled || landscapeHidden() || locked()) { hide(); return }
         val top = IslandHub.stack.top(now)
         if (top == null) { hide(); return }
         if (mode == Mode.PEEK && now < peekEnd && shownId == top.id) return
@@ -320,7 +324,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
             bg.colors = intArrayOf(Color.BLACK, Color.BLACK)
             bg.setStroke(dp(1), 0x1FFFFFFF)
         } else {
-            val a = if (Build.VERSION.SDK_INT >= 31) 0xD6 else 0xF4
+            val a = if (Build.VERSION.SDK_INT >= 31) 0xEE else 0xF6
             bg.orientation = GradientDrawable.Orientation.TOP_BOTTOM
             bg.colors = intArrayOf((a shl 24) or 0x2A2A30, (a shl 24) or 0x0E0E12)
             bg.setStroke(dp(1), 0x33FFFFFF)
@@ -331,6 +335,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
     private val tick = object : Runnable {
         override fun run() {
             if (mode == Mode.HIDDEN) { tickOn = false; return }
+            if (locked()) { hide(); tickOn = false; return }
             val now = IslandHub.now()
             IslandHub.stack.get("timer:builtin")?.let { t ->
                 val p = t.payload as TimerPayload

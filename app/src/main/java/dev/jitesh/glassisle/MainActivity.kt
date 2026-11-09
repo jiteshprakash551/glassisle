@@ -85,12 +85,7 @@ class MainActivity : Activity() {
         root.addView(section("About"))
         root.addView(card(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            addView(txt("Built by Jitesh", 16f, Color.WHITE, true))
-            addView(txt("jiteshprakash.com.np", 14f, prefs.accentColor()).apply {
-                setPadding(0, dp(4), 0, dp(8))
-                setOnClickListener { try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://jiteshprakash.com.np"))) } catch (_: Throwable) {} }
-            })
-            addView(txt("Open source (MIT). The app declares no INTERNET permission, so it cannot send anything off your phone. Notification text is only used to draw the island and is never stored.", 12f, 0xFF8E8E96.toInt()))
+            addView(txt("GlassIsle is open source (MIT). The app declares no INTERNET permission, so it cannot send anything off your phone. Notification text is only used to draw the island and is never stored. The island stays hidden while the phone is locked.", 12f, 0xFF8E8E96.toInt()))
         }))
         setContentView(ScrollView(this).apply { setBackgroundColor(Color.parseColor("#0B0B0F")); addView(root) })
     }

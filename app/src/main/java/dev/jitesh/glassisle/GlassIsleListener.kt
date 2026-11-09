@@ -149,7 +149,7 @@ class GlassIsleListener : NotificationListenerService() {
             IslandHub.post(Item("n:" + sbn.key, kind, title.ifEmpty { appName }, text, pkg, now,
                 now + prefs.peekSec * 1000L + 500L, null, payload), peek = true)
         } else {
-            if (kind != Kind.CALL && getSystemService(android.app.KeyguardManager::class.java).isKeyguardLocked) return
+            if (getSystemService(android.app.KeyguardManager::class.java).isKeyguardLocked) return
             val t = if (kind == Kind.TIMER && chrono) {
                 val elapsedBase = n.`when`
                 if (elapsedBase > 0) title.ifEmpty { appName } else title.ifEmpty { appName }
