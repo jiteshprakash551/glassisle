@@ -14,6 +14,7 @@ adb shell cmd notification allow_listener $APP/$APP.GlassIsleListener
 sleep 20
 adb shell am start -n $APP/.MainActivity; sleep 3; shot 01_main
 adb shell input keyevent KEYCODE_HOME; sleep 2
+adb shell am start -n $APP/.DebugActivity --es mode timer; sleep 8; adb shell am force-stop com.android.shell 2>/dev/null; adb shell input keyevent KEYCODE_HOME; sleep 4
 adb logcat -c
 adb shell cmd notification post -S bigtext -t "Alex" t1 "Hey, are you free tonight? Let's grab dinner at 8."
 sleep 2; shot 02_notification_peek
@@ -32,5 +33,5 @@ adb shell dumpsys battery set ac 1; adb shell dumpsys battery set level 80; slee
 adb shell dumpsys battery reset
 adb shell dumpsys window windows | grep -i glassisle | head -5 > $OUT/overlay_windows.txt
 adb logcat -d > $OUT/logcat_full.txt
-grep -E "FATAL|AndroidRuntime|GI_TEST| GI:|dev.jitesh.glassisle.*(Exception|Error)" $OUT/logcat_full.txt | head -60 > $OUT/logcat_filtered.txt
+grep -E "FATAL|AndroidRuntime|GI_TEST| GI +:|dev.jitesh.glassisle.*(Exception|Error)" $OUT/logcat_full.txt | head -60 > $OUT/logcat_filtered.txt
 exit 0

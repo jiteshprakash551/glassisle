@@ -92,6 +92,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
 
     // ---------- Sink ----------
     override fun onPost(item: Item, peek: Boolean) {
+        IslandHub.log("onPost kind=${item.kind} peek=$peek mode=$mode")
         if (!prefs.enabled) return
         val now = IslandHub.now()
         if (mode == Mode.EXPANDED && shownId == item.id) { rerender(item, Mode.EXPANDED); return }
@@ -234,6 +235,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
     }
 
     private fun hide() {
+        IslandHub.log("hide (mode was $mode)")
         anim?.cancel()
         mode = Mode.HIDDEN; shownId = null
         if (!attached) return
@@ -251,6 +253,7 @@ class IslandController(private val svc: AccessibilityService) : IslandHub.Sink {
     private fun rerender(item: Item, m: Mode) = render(item, m, animate = false)
 
     private fun render(item: Item, newMode: Mode, animate: Boolean) {
+        IslandHub.log("render ${item.kind} -> $newMode animate=$animate")
         val wasHidden = mode == Mode.HIDDEN
         mode = newMode; shownId = item.id
         if (newMode == Mode.EXPANDED && expandEnd < IslandHub.now()) expandEnd = IslandHub.now() + 12_000

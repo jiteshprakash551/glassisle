@@ -13,6 +13,10 @@ object IslandHub {
     var sink: Sink? = null
     var foregroundPkg: String? = null
 
+    var debug = false
+    /** Debug-build breadcrumbs only (reasons and kinds, never notification content). */
+    fun log(m: String) { if (debug) android.util.Log.i("GI", m) }
+
     fun now(): Long = SystemClock.elapsedRealtime()
 
     fun post(item: Item, peek: Boolean = true) {

@@ -75,6 +75,7 @@ class GlassIsleAccessibility : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        IslandHub.debug = applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0
         val ctl = IslandController(this)
         controller = ctl
         IslandHub.sink = ctl
