@@ -27,8 +27,8 @@ sleep 3; shot 02b_release_charging
 sleep 8; shot 02c_release_charging_after
 adb shell dumpsys battery reset
 # real system-posted notification through the release build's listener
-adb shell cmd notification post -S bigtext -t "Alex" smoke "Hey, are you free tonight? Let's grab dinner at 8." > $OUT/post.txt 2>&1
-sleep 2; shot 03_release_notification
+adb shell "cmd notification post -S bigtext -t Alex smoke 'Hey are you free tonight, lets grab dinner at 8'" > $OUT/post.txt 2>&1
+sleep 1; shot 03_release_notification; sleep 1; shot 03b_release_notification
 adb shell dumpsys notification --noredact | grep -c "Alex" > $OUT/notif_count.txt
 adb shell dumpsys window windows | grep -i glassisle | head -5 > $OUT/overlay_windows.txt
 adb logcat -d > $OUT/logcat_full.txt
