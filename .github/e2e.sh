@@ -14,7 +14,7 @@ adb shell cmd notification allow_listener $APP/$APP.GlassIsleListener
 sleep 20
 adb shell am start -n $APP/.MainActivity; sleep 3; shot 01_main
 adb shell input keyevent KEYCODE_HOME; sleep 2
-adb shell am start -n $APP/.DebugActivity --es mode timer; sleep 8; adb shell am force-stop com.android.shell 2>/dev/null; adb shell input keyevent KEYCODE_HOME; sleep 4
+adb shell cmd notification post w1 "warm-up"; sleep 9; adb shell input keyevent KEYCODE_HOME; sleep 2
 adb logcat -c
 adb shell cmd notification post -S bigtext -t "Alex" t1 "Hey, are you free tonight? Let's grab dinner at 8."
 sleep 2; shot 02_notification_peek
