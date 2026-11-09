@@ -26,6 +26,7 @@ class GlassIsleListener : NotificationListenerService() {
 
     override fun onListenerConnected() {
         super.onListenerConnected()
+        dbg("listener connected")
         try {
             val m = getSystemService(MediaSessionManager::class.java)
             val c = ComponentName(this, GlassIsleListener::class.java)
@@ -89,7 +90,7 @@ class GlassIsleListener : NotificationListenerService() {
         )
     }
 
-    override fun onNotificationPosted(sbn: StatusBarNotification) { main.post { handle(sbn) } }
+    override fun onNotificationPosted(sbn: StatusBarNotification) { dbg("raw posted from " + sbn.packageName); main.post { handle(sbn) } }
     override fun onNotificationRemoved(sbn: StatusBarNotification) { main.post { IslandHub.remove("n:" + sbn.key) } }
 
     /** Debug-build-only breadcrumbs: reasons only, never notification content. */
