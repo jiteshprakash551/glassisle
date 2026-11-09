@@ -30,8 +30,10 @@ adb shell input tap 730 446; sleep 1.5; shot 07b_music_after_next
 adb shell input tap 537 446; sleep 1.5; shot 07c_music_after_pause
 adb shell dumpsys media_session | grep -A12 "glassisle-test" | grep -E "state=PlaybackState|description=" | head -2 > $OUT/media_after.txt
 sleep 1
-adb shell input swipe $((W/2)) 400 $((W/2)) 40 120; adb shell am start -n $APP/.DebugActivity --es mode timer; sleep 3; shot 08_timer
-adb shell dumpsys battery set ac 1; adb shell dumpsys battery set level 80; sleep 1; adb shell dumpsys battery unplug; sleep 1; adb shell dumpsys battery set ac 1; sleep 2; shot 09_charging
+adb shell input swipe 540 400 540 40 120; sleep 1
+adb shell dumpsys battery unplug; sleep 2; adb shell dumpsys battery set level 80; adb shell dumpsys battery set ac 1; sleep 2; shot 09_charging
+sleep 8
+adb shell am start -n $APP/.DebugActivity --es mode timer; sleep 3; shot 08_timer
 adb shell dumpsys battery reset
 adb shell dumpsys display | grep -iE "cutout|DisplayCutout" | head -5 > $OUT/cutout.txt
 adb shell dumpsys window windows | grep -i glassisle | head -5 > $OUT/overlay_windows.txt
